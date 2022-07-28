@@ -14,7 +14,7 @@ function getLines(filename) {
 
 function ping(ip, uid) {
     return new Promise((resolve, reject) => {
-        axios.get(`http://${ip}:9002/incentivecash+uid:${uid}`).then(res => {
+        axios.get(`http://${ip}:9002/incentivecash+uid:${uid}`, {insecureHTTPParser: true}).then(res => {
             resolve(res.data.response);
         }).then(err => {
             reject(err)
@@ -31,11 +31,18 @@ async function start() {
         let uid = node.split(":")[1];
         let rewards = await ping(ip, uid);
         // console.log(rewards.details.rewards)
-        console.log(`【${rewards.uid}】 LastPing: ${rewards.details.lastPing}`)
-        console.log(rewards.details.rewards)
+        // console.log(`【${rewards.uid}】 LastPing: ${rewards.details.lastPing}`)
+        // console.log(rewards.details.rewards)
+        try {
+            console.log(`【${rewards.uid}】 LastPing: ${rewards.details.lastPing}`)
+            console.log(rewards.details.rewards)
+        } catch(e) {
+            console.log('Ignore error')
+        }
         console.log('----------')
     }
 }
+// FIXME why the start() function always run two times during interval
 start();
 setInterval(function () {
     start()
